@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  10.0.0              
+                      VERSION  10.0.3              
 ========================================================= */
 "use strict";
 
@@ -1692,20 +1692,27 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			_validateInputValue: function _validateInputValue(val) {
 				if (!isNaN(+val)) {
 					return +val;
+				} else if (typeof val === "string") {
+					return this._parseString(val);
 				} else if (Array.isArray(val)) {
-					this._validateArray(val);
-					return val;
+					return this._validateArray(val);
 				} else {
 					throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(val));
 				}
 			},
+			_parseString: function _parseString(val) {
+				return parseInt(val.replace(/\.\d+$/, "").replace(/[^\d]/g, ""));
+			},
 			_validateArray: function _validateArray(val) {
 				for (var i = 0; i < val.length; i++) {
 					var input = val[i];
-					if (typeof input !== 'number') {
+					if (typeof input === 'number') {} else if (typeof input === 'string') {
+						val[i] = this._parseString(input);
+					} else {
 						throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(input));
 					}
 				}
+				return val;
 			},
 			_setDataVal: function _setDataVal(val) {
 				this.element.setAttribute('data-value', val);
